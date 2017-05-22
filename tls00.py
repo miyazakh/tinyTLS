@@ -1,5 +1,23 @@
 import random
 
+class Aes:
+    key = 0
+    def key(self, key):
+        self.key = key
+    def enc(self, In):
+        Out = ''
+        for ch in In:
+            Out +=  chr((ord(ch) ^ self.key))
+        return Out
+
+alice = Aes()
+bob   = Aes()
+
+alice.key(123)
+bob.  key(123)
+alice.enc("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+bob.enc(alice.enc("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+
 class Digest:
     def sha8(self, msg):
 	    md = 0x5a
@@ -29,10 +47,9 @@ for i in range(0,255):priKey.encrypt(pubKey.encrypt(i))
 
 
 class Sig:
-    def sign(self, priKey, msg): 
+    def sign(self, priKey, msg):
         return priKey.encrypt(Digest().sha8(msg))
-    
-    def verify(self, pubKey, sig, msg): 
+    def verify(self, pubKey, sig, msg):
         return pubKey.encrypt(sig) == Digest().sha8(msg)
 
 sig = Sig().sign(priKey, "ABCDEFG")
@@ -42,12 +59,10 @@ Sig().verify(pubKey, sig, "ABCDEFG")
 class Dh:
     def __init__(self, dhParam):
         self.dhParam = dhParam
-    
     def genKey(self):
         self.pri = random.randint(0, 256)
         print "private key = " + str(self.pri)
         return dhParam.p ** self.pri % self.dhParam.g
-    
     def agree(self, pub):
         return pub ** self.pri % self.dhParam.g
 
