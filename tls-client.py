@@ -9,7 +9,7 @@ sock.connect(server_address)
 tls = tTls()
 tls.connect(sock)
 
-message = tls.send('This is the message')
+message = tls.send('Hello TLS world')
 data = tls.recv(32)
 print 'received:' + data
 sock.close()
