@@ -6,8 +6,8 @@ from tls00 import *
 alice = Aes()
 bob   = Aes()
 
-alice.key(123)
-bob.  key(123)
+alice.setkey(123)
+bob.  setKey(123)
 print alice.enc("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 print bob.enc(alice.enc("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
@@ -26,8 +26,10 @@ sig = Sig().sign(priKey, "ABCDEFG")
 print Sig().verify(pubKey, sig, "ABCDEFG")
 
 dhParam = RsaKey(13, 2)
-alice = Dh(dhParam)
-bob   = Dh(dhParam)
+alice = Dh()
+bob   = Dh()
+alice.param(dhParam)
+bob.  param(dhParam)
 aPub = alice.genKey()
 bPub = bob.genKey()
 print alice.agree(bPub)

@@ -7,15 +7,13 @@ server_address = ('localhost', 10000)
 sock.connect(server_address)
 
 aes = Aes()
-aes.key(23)
+aes.setKey(23)
 
 try:
-    message = aes.enc('This is the message')
-    print "Encrypted: " + message
+    message = aes.enc('Hello crypt world')
+    print 'Encrypted:' + message
     sock.sendall(message)
     data = aes.enc(sock.recv(len(message)))
-    print 'received:' + data
-
+    print 'Received: ' + data
 finally:
-    print 'closing socket'
     sock.close()

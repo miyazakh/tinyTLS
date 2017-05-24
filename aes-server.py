@@ -8,16 +8,18 @@ sock.bind(server_address)
 sock.listen(1)
 
 aes = Aes()
-aes.key(23)
+aes.setKey(23)
 
 while True:
     connection, client_address = sock.accept()
     try:
         while True:
-            data = aes.enc(connection.recv(32))
+            data = connection.recv(32)
             if data:
-                print 'received: ' + data
-                connection.sendall(aes.enc(data))
+                print 'Received: ' + data
+                dec = aes.enc(data)
+                print 'Decrypted:' + dec
+                connection.sendall(aes.enc(dec))
             else:
                 break
     finally:

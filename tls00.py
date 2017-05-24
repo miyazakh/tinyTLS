@@ -5,8 +5,8 @@ import random
 
 class Aes:
     key = 0
-    def key(self, key):
-        self.key = key
+    def setKey(self, key):
+        self.key = int(key)
     def enc(self, In):
         Out = ''
         for ch in In:
@@ -63,20 +63,24 @@ class tTls:
             sock.sendall("ClientHello")
             sock.sendall(str(self.dh.genKey()))
             pub = sock.recv(32)
-            print pub
-            self.aes.key(int(self.dh.agree(int(pub))))
+            print "pub:" + pub
+            agree = self.dh.agree(int(pub))
+            print "agree:" + str(agree)
+            self.aes.setKey(agree)
             return
         def accept(self, sock):
             self.sock = sock
             print "tls.accept"
-            print sock.recv(32)
-            sock.sendall(str(self.dh.genKey()))
-            pub = sock.recv(32)
-            print pub
-            self.aes.key(int(self.dh.agree(int(pub))))
+            print self.sock.recv(len("ClientHello"))
+            self.sock.sendall(str(self.dh.genKey()))
+            pub = self.sock.recv(32)
+            print  "pub:" + pub
+            agree = self.dh.agree(int(pub))
+            print "agree:" + str(agree)
+            self.aes.setKey(agree)
             return
         def send(self, msg):
             self.sock.sendall(self.aes.enc(msg))
             return
-        def recv(self, len):
-            return self.aes.enc(self.sock.recv(len))
+        def recv(self, sz):
+            return self.aes.enc(self.sock.recv(sz))
