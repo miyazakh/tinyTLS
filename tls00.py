@@ -45,7 +45,7 @@ class Dh:
         return
     def genKey(self):
         self.pri = random.randint(0, 256)
-        print "private:" + str(self.pri)
+        print "dh.private:" + str(self.pri)
         return self.dhParam.p ** self.pri % self.dhParam.g
     def agree(self, pub):
         return pub ** self.pri % self.dhParam.g
@@ -55,7 +55,7 @@ class tTls:
             self.dh = Dh()
             self.dh.param(RsaKey(13, 2))
             self.aes = Aes()
-            self.sock = 0;
+            self.sock = 0
             self.key = 0
         def connect(self,sock):
             print "=== tls.connect ==="
@@ -63,9 +63,9 @@ class tTls:
             sock.sendall("ClientHello")
             sock.sendall(str(self.dh.genKey()))
             pub = sock.recv(32)
-            print "public: " + pub
+            print "dh.public: " + pub
             agree = self.dh.agree(int(pub))
-            print "agree:  " + str(agree)
+            print "dh.agree:  " + str(agree)
             self.aes.setKey(agree)
             return
         def accept(self, sock):
@@ -74,13 +74,15 @@ class tTls:
             self.sock.recv(len("ClientHello"))
             self.sock.sendall(str(self.dh.genKey()))
             pub = self.sock.recv(32)
-            print "public: " + pub
+            print "dh.public: " + pub
             agree = self.dh.agree(int(pub))
-            print "agree:  " + str(agree)
+            print "dh.agree:  " + str(agree)
             self.aes.setKey(agree)
             return
         def send(self, msg):
             self.sock.sendall(self.aes.enc(msg))
             return
         def recv(self, sz):
-            return self.aes.enc(self.sock.recv(sz))
+            msg = self.sock.recv(sz)
+            print "Recv(raw): " + msg
+            return self.aes.enc(msg)

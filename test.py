@@ -2,6 +2,7 @@
 # coding:UTF-8
 
 from tls00 import *
+from rsa   import *
 
 alice = Aes()
 bob   = Aes()
@@ -34,3 +35,12 @@ aPub = alice.genKey()
 bPub = bob.genKey()
 print alice.agree(bPub)
 print bob.agree(aPub)
+
+＃ RSA key generation
+for j in range(0,100):
+    pub, pri = RsaGenKey(256)
+    print str(pub) + str(pri)
+    for i in range(0, 256):
+        if(i != pow(pow(i, pub[0], pub[1]), pri[0], pri[1])):
+            print "ERR" + str(i)
+            break
