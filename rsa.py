@@ -19,14 +19,16 @@ def RsaGenKey(min):
       while b:
         a, b = b, a % b
       return a
-
     def lcm(x, y):
       return x * y // gcd(x, y)
-    
+
     primes = prime(1000)
-    q = primes[random.randint(1, len(primes)-1)]
-    p_index = random.randint(1, len(primes)-2)
-    p = primes[p_index]
+    p = 0
+    q = 0
+    while(p == q):
+        q = primes[random.randint(1, len(primes)-1)]
+        p_index = random.randint(1, len(primes)-2)
+        p = primes[p_index]
     n = p * q
     while(n < min):
         p_index += 1
