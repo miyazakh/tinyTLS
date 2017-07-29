@@ -23,12 +23,11 @@ def RsaGenKey(min):
       return x * y // gcd(x, y)
 
     primes = prime(1000)
-    p = 0
-    q = 0
-    while(p == q):
+    while True:
         q = primes[random.randint(1, len(primes)-1)]
         p_index = random.randint(1, len(primes)-2)
         p = primes[p_index]
+        if p != q: break
     n = p * q
     while(n < min):
         p_index += 1
