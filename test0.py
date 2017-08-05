@@ -36,9 +36,10 @@ else:
 pKey = RsaGenKey(256)
 caPub = pKey[0]
 caPri = pKey[1]
-ca = Cert0(caPub)
-ca.sign(caPri)
-ca.verify(caPub)
+caCert = Cert0(caPub)
+caCert.sign(caPri)
+caCert.verify(caPub)
+print caCert.json()
 
 svKey = RsaGenKey(256)
 svPub = svKey[0]
@@ -47,6 +48,8 @@ svCert= Cert0(svPub)
 
 svCert.sign(caPri)
 svCert.verify(caPub)
+print svCert.json()
+
 
 dhParam = RsaGenKey(256)[0]
 alice = Dh(dhParam)

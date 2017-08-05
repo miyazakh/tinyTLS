@@ -64,7 +64,7 @@ class Cert0:
         sha = Sha0()
         sha.update(str(self.pub))
         return sha.digest() == RsaPublic(pub).verify(self.sig)
-    def json(self:
+    def json(self):
         return json.dumps(self.pub, self.sig)
 
 class Dh:
