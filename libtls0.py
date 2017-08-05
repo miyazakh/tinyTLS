@@ -5,7 +5,7 @@ import random
 import json
 from rsa import *
 
-class Aes8:
+class Aes0:
     def __init__(self, key):
         self.key = int(key)
     def encrypt(self, text):
@@ -19,7 +19,7 @@ class Aes8:
             text +=  chr((ord(ch) ^ self.key))
         return text
 
-class Sha8:
+class Sha0:
     def __init__(self):
         self.md = 0x5a
     def update(self, msg):
@@ -77,7 +77,7 @@ class Tls0:
             sock.sendall(json.dumps(self.dh.genKey()))
             agree = self.dh.agree(int(pub))
             print "dh.agree:  " + str(agree)
-            self.aes = Aes8(agree & 0xff)
+            self.aes = Aes0(agree & 0xff)
             return
         def accept(self, sock):
             self.sock = sock
@@ -97,5 +97,4 @@ class Tls0:
             return
         def recv(self, sz):
             msg = self.sock.recv(sz)
-            ##print "Recv(raw): " + str(msg)
             return self.aes.encrypt(msg)
