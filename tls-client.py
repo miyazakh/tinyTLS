@@ -1,12 +1,12 @@
 import socket
 import sys
-from tls00 import *
+from libttls import *
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('localhost', 10000)
+server_address = ('localhost', 11111)
 sock.connect(server_address)
 
-tls = tTls()
+tls = Tls0()
 tls.connect(sock)
 
 message = tls.send('Hello TLS world')
