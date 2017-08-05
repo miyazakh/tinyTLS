@@ -3,6 +3,7 @@
 
 from libttls import *
 from rsa   import *
+import json
 
 alice = Aes8(123)
 bob   = Aes8(123)
@@ -33,12 +34,27 @@ else:
     print "Failed"
 
 pKey = RsaGenKey(256)
-dhParam = pKey[0]
+caPub = pKey[0]
+caPri = pKey[1]
+ca = Cert0(caPub)
+ca.sign(caPri)
+ca.verify(caPub)
+
+svKey = RsaGenKey(256)
+svPub = svKey[0]
+svPpr = svKey[1]
+svCert= Cert0(svPub)
+
+svCert.sign(caPri)
+svCert.verify(caPub)
+
+dhParam = RsaGenKey(256)[0]
 alice = Dh(dhParam)
 bob   = Dh(dhParam)
 aPub = alice.genKey()
 bPub = bob.genKey()
 print str(alice.agree(bPub)) + " == " + str(bob.agree(aPub))
+
 
 ＃ RSA key generation
 for j in range(0,100):

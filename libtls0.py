@@ -51,6 +51,20 @@ class RsaPrivate:
     def verify(self, sig):
         return self.encrypt(sig)
 
+class Cert0:
+    def __init__(self, pub):
+        self.pub = pub
+        self.sig = None
+    def sign(self, pri):
+        sha = Sha0()
+        sha.update(str(self.pub))
+        digest = sha.digest()
+        self.sig = RsaPrivate(pri).sign(digest)
+    def verify(self, pub):
+        sha = Sha0()
+        sha.update(str(self.pub))
+        return sha.digest() == RsaPublic(pub).verify(self.sig)
+
 class Dh:
     def __init__(self, param):
         self.param = param
