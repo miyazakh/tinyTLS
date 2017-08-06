@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # coding:UTF-8
 
-from libttls import *
-from rsa   import *
+from crypt0 import *
 import json
 
-alice = Aes8(123)
-bob   = Aes8(123)
+alice = Aes0(123)
+bob   = Aes0(123)
 print alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 print bob.decrypt(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
-sha = Sha8()
+sha = Sha0()
 sha.update("ABCDEFG")
 print sha.digest()
 
@@ -18,12 +17,6 @@ print sha.digest()
 pKey = RsaGenKey(256)
 pub = RsaPublic(pKey[0])
 pri = RsaPrivate(pKey[1])
-
-for i in range(0,256):
-    print pub.encrypt(i)
-
-for i in range(0,256):
-    print pri.encrypt(pub.encrypt(i))
 
 msg = 1234
 sig = pri.sign(msg)
@@ -39,19 +32,37 @@ caPri = pKey[1]
 caCert = Cert0(caPub)
 caCert.sign(caPri)
 caCert.verify(caPub)
-print caCert.json()
+print "caCert = " + caCert.dumps()
+f = open("caCert.json", "w")
+caCert.dump(f)
 
 svKey = RsaGenKey(256)
 svPub = svKey[0]
-svPpr = svKey[1]
+svPri = svKey[1]
 svCert= Cert0(svPub)
 
 svCert.sign(caPri)
-svCert.verify(caPub)
-print svCert.json()
+print svCert.verify(caPub)
+print svCert.verify(caCert.pubKey())
 
+print "svCert = " + svCert.dumps()
+f = open("svCert.json", "w")
+svCert.dump(f)
+
+f = open("svKey.json", "w")
+json.dump(svPri, f)
+
+f = open("caCert.json")
+caCert.load(f)
+print "caCert = " + caCert.dumps()
+f = open("svCert.json")
+svCert.load(f)
+print "svCert = " + svCert.dumps()
+
+print svCert.verify(caCert.pubKey())
 
 dhParam = RsaGenKey(256)[0]
+dhParam = (1411, 57181)
 alice = Dh(dhParam)
 bob   = Dh(dhParam)
 aPub = alice.genKey()
@@ -59,7 +70,7 @@ bPub = bob.genKey()
 print str(alice.agree(bPub)) + " == " + str(bob.agree(aPub))
 
 
-＃ RSA key generation
+#RSA key generation
 for j in range(0,100):
     pub, pri = RsaGenKey(256)
     print str(pub) + str(pri)

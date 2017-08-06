@@ -52,20 +52,32 @@ class RsaPrivate:
         return self.encrypt(sig)
 
 class Cert0:
-    def __init__(self, pub):
+    def __init__(self, pub=None, sig=None):
         self.pub = pub
         self.sig = None
     def sign(self, pri):
         sha = Sha0()
-        sha.update(str(self.pub))
+        sha.update(str(self.pub[0])+str(self.pub[1]))
         digest = sha.digest()
         self.sig = RsaPrivate(pri).sign(digest)
     def verify(self, pub):
         sha = Sha0()
-        sha.update(str(self.pub))
-        return sha.digest() == RsaPublic(pub).verify(self.sig)
-    def json(self):
-        return json.dumps(self.pub, self.sig)
+        sha.update(str(self.pub[0])+str(self.pub[1]))
+        digest = sha.digest()
+        return digest == RsaPublic(pub).verify(self.sig)
+    def pubKey(self):
+        return self.pub
+    def dump(self,f):
+        json.dump((self.pub, self.sig), f)
+    def dumps(self):
+        return json.dumps((self.pub, self.sig))
+    def load(self, f):
+        cert = json.load(f)
+        self.pub = cert[0]
+        self.sig = cert[1]
+    def loads(self, cert):
+        self.pub = json.loads(cert)[0]
+        self.sig = json.loads(cert)[1]
 
 class Dh:
     def __init__(self, param):
@@ -73,44 +85,7 @@ class Dh:
         self.pri = 0
     def genKey(self):
         self.pri = random.randint(0, 256)
-        print "dh.private:" + str(self.pri)
+        print "    dh.PRIVATE:" + str(self.pri)
         return pow(self.param[1], self.pri, self.param[0])
     def agree(self, pub):
         return pow(pub, self.pri, self.param[0])
-
-class Tls0:
-        def __init__(self):
-            self.dh = None
-            self.sock = 0
-            self.key = 0
-        def connect(self,sock):
-            print "=== tls.connect ==="
-            self.sock = sock
-            sock.sendall(json.dumps("ClientHello"))
-            (dhP, pub) = json.loads(sock.recv(32))
-            self.dh = Dh(dhP)
-            print "dh.public: " + str(pub)
-            sock.sendall(json.dumps(self.dh.genKey()))
-            agree = self.dh.agree(int(pub))
-            print "dh.agree:  " + str(agree)
-            self.aes = Aes0(agree & 0xff)
-            return
-        def accept(self, sock):
-            self.sock = sock
-            print "=== tls.accept ==="
-            self.sock.recv(32)
-            dhP = RsaGenKey(256)[0]
-            self.dh = Dh(dhP)
-            self.sock.sendall(json.dumps((dhP, self.dh.genKey())))
-            pub = self.sock.recv(32)
-            print "dh.public: " + pub
-            agree = self.dh.agree(json.loads(pub))
-            print "dh.agree:  " + str(agree)
-            self.aes = Aes8(agree & 0xff)
-            return
-        def send(self, msg):
-            self.sock.sendall(self.aes.encrypt(msg))
-            return
-        def recv(self, sz):
-            msg = self.sock.recv(sz)
-            return self.aes.encrypt(msg)
