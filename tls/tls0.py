@@ -6,6 +6,7 @@ class Tls0:
             self.priK = priK
             self.peerCert = peerC
             print "peerCert = " + str(peerC)
+
         def connect(self, sock):
             # Connect Helpers
             def sendClientHello():
