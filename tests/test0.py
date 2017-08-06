@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # coding:UTF-8
 
-from crypt0 import *
 import json
+import sys
+sys.path.append('./crypt')
+from crypt0 import *
+
 
 alice = Aes0(123)
 bob   = Aes0(123)
@@ -33,7 +36,7 @@ caCert = Cert0(caPub)
 caCert.sign(caPri)
 caCert.verify(caPub)
 print "caCert = " + caCert.dumps()
-f = open("caCert.json", "w")
+f = open("./certs/caCert.json", "w")
 caCert.dump(f)
 
 svKey = RsaGenKey(256)
@@ -46,16 +49,16 @@ print svCert.verify(caPub)
 print svCert.verify(caCert.pubKey())
 
 print "svCert = " + svCert.dumps()
-f = open("svCert.json", "w")
+f = open("./certs/svCert.json", "w")
 svCert.dump(f)
 
-f = open("svKey.json", "w")
+f = open("./certs/svKey.json", "w")
 json.dump(svPri, f)
 
-f = open("caCert.json")
+f = open("./certs/caCert.json")
 caCert.load(f)
 print "caCert = " + caCert.dumps()
-f = open("svCert.json")
+f = open("./certs/svCert.json")
 svCert.load(f)
 print "svCert = " + svCert.dumps()
 

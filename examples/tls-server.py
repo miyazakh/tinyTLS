@@ -1,5 +1,6 @@
 import socket
 import sys
+sys.path.append('./tls')
 from tls0 import *
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -8,9 +9,9 @@ sock.bind(server_address)
 sock.listen(1)
 
 svCert = Cert0()
-f = open("svCert.json")
+f = open("./certs/svCert.json")
 svCert.load(f)
-f = open("svKey.json")
+f = open("./certs/svKey.json")
 svKey = RsaPrivate(json.load(f))
 
 tls = Tls0(svCert, svKey)

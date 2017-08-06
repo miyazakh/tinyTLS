@@ -1,3 +1,5 @@
+import sys
+sys.path.append('./crypt')
 from crypt0 import *
 
 class Tls0:
@@ -66,7 +68,7 @@ class Tls0:
                 print "    server.public: " + str(pub)
             def recvClientKeyExchange():
                 print "recvClientKeyExchange"
-                pub = self.sock.recv(32)
+                pub = str(self.sock.recv(32))
                 print "    client.public: " + str(pub)
                 return self.dh.agree(json.loads(pub))
 
