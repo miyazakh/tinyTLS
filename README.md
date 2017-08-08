@@ -1,7 +1,6 @@
-# tls0.0
-Tiny TLS
+#H1 Tiny TLS
 
-File organization
+#H3File organization
 
 ./certs  
     Certificates, keyfiles for examples
@@ -25,19 +24,20 @@ File organization
    TLS layer class
 
 
-Quick start  
+#H3Quick start  
 
-  $ git clone https://github.com/kojo1/tinyTLS  
-  $ cd tinyTLS  
-  $ python ./test/test0.py  
+    $ git clone https://github.com/kojo1/tinyTLS  
+    $ cd tinyTLS  
+    $ python ./test/test0.py  
 
-  $ python ./examples/echo-server.py &  
-  $ python ./examples/echo-client.py
+    $ python ./examples/echo-server.py &  
+    $ python ./examples/echo-client.py
 
-  $ python ./examples/aes-server.py &  
-  $ python ./examples/aes-client.py
+    $ python ./examples/aes-server.py &  
+    $ python ./examples/aes-client.py
 
-  $ python ./examples/tls-server.py &  
-  $ python ./examples/tls-client.py
+    $ python ./examples/tls-server.py &  
+    $ python ./examples/tls-client.py
+
 
 Enjoy!!
