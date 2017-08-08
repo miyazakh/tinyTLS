@@ -1,6 +1,6 @@
 #H1 Tiny TLS
 
-#H3File organization
+### File organization
 
 ./certs  
     Certificates, keyfiles for examples
@@ -24,7 +24,7 @@
    TLS layer class
 
 
-#H3Quick start  
+### Quick start  
 
     $ git clone https://github.com/kojo1/tinyTLS  
     $ cd tinyTLS  
