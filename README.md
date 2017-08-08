@@ -1,4 +1,4 @@
-#H1 Tiny TLS
+# Tiny TLS
 
 ### File organization
 
