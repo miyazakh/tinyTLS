@@ -19,22 +19,55 @@ class Aes0:
         return text
 class Aes0_ctr:
         def __init__(self, key, nonce):
-            self.key = int(key & 0xff)
-            self.nonce = nonce
+            self.key =   key & 0xff
+            self.nonce = nonce & 0xff
         def encrypt(self, text):
             cipher = ''
-            ctr = int((self.nonce  & 0xf) << 0x4)
+            ctr = (self.nonce  & 0xf) << 0x4
             for ch in text:
-                cipher +=  chr((ord(ch) ^ self.key ^ ctr))
+                cipher +=  chr((ord(ch) ^ self.key ^ ctr) & 0xff)
                 ctr += 1
             return cipher
         def decrypt(self, cipher):
             text = ''
-            ctr = int((self.nonce  & 0xf) << 0x4)
+            ctr = (self.nonce  & 0xf) << 0x4
             for ch in cipher:
-                text +=  chr((ord(ch) ^ self.key ^ ctr))
+                text +=  chr((ord(ch) ^ self.key ^ ctr) & 0xff)
                 ctr += 1
             return text
+
+class Aes0_gcm:
+        def __init__(self, key, nonce, authIn):
+            self.key = int(key & 0xff)
+            self.nonce = nonce
+            self.mult = Sha0()
+            self.authIn = authIn & 0xff
+        def encrypt(self, text):
+            cipher = ''
+            ctr = (self.nonce  & 0xf) << 0x4
+            self.mult.update(str(self.authIn))
+            auth = self.mult.digest()
+            for ch in text:
+                cipherB = ord(ch) ^ self.key ^ ctr
+                cipher += chr(cipherB & 0xff)
+                ctr += 1
+                self.mult.update(str(auth ^ cipherB))
+                auth = self.mult.digest()
+            return (cipher, auth)
+        def decrypt(self, cipher, authTag):
+            text = ''
+            ctr = (self.nonce  & 0xf) << 0x4
+            self.mult.update(str(self.authIn))
+            auth = self.mult.digest()
+            for ch in cipher:
+                textB = ord(ch) ^ self.key ^ ctr
+                text += chr(textB & 0xff)
+                ctr += 1
+                self.mult.update(str(auth ^ ord(ch)))
+                auth = self.mult.digest()
+            if(auth == authTag):
+                return text
+            else: return None
 
 class Sha0:
     def __init__(self):
