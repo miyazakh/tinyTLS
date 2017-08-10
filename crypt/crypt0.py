@@ -17,6 +17,24 @@ class Aes0:
         for ch in cipher:
             text +=  chr((ord(ch) ^ self.key))
         return text
+class Aes0_ctr:
+        def __init__(self, key, nonce):
+            self.key = int(key & 0xff)
+            self.nonce = nonce
+        def encrypt(self, text):
+            cipher = ''
+            ctr = int((self.nonce  & 0xf) << 0x4)
+            for ch in text:
+                cipher +=  chr((ord(ch) ^ self.key ^ ctr))
+                ctr += 1
+            return cipher
+        def decrypt(self, cipher):
+            text = ''
+            ctr = int((self.nonce  & 0xf) << 0x4)
+            for ch in cipher:
+                text +=  chr((ord(ch) ^ self.key ^ ctr))
+                ctr += 1
+            return text
 
 class Sha0:
     def __init__(self):

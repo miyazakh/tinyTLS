@@ -3,6 +3,7 @@
 
 import json
 import sys
+import random
 sys.path.append('./crypt')
 from crypt0 import *
 
@@ -11,6 +12,14 @@ alice = Aes0(123)
 bob   = Aes0(123)
 print alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 print bob.decrypt(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+
+nonce = random.randint(1, 15)
+print "nonce = " + str(nonce)
+alice = Aes0_ctr(123, nonce)
+bob   = Aes0_ctr(123, nonce)
+print alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+print bob.decrypt(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+
 
 sha = Sha0()
 sha.update("ABCDEFG")
