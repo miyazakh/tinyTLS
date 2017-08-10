@@ -18,7 +18,7 @@ tls = Tls0(svCert, svKey)
 
 while True:
     connection, client_address = sock.accept()
-    tls.accept(connection)
+    tls.accept(connection, True)
     try:
         while True:
             data = tls.recv(32)

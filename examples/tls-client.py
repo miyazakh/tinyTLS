@@ -11,7 +11,7 @@ caCert = Cert0()
 f = open("./certs/caCert.json")
 caCert.load(f)
 tls = Tls0(peerC=caCert)
-tls.connect(sock)
+tls.connect(sock, True)
 
 message = tls.send('Hello TLS world')
 data = tls.recv(32)

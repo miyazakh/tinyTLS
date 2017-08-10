@@ -7,87 +7,88 @@ class Tls0:
             self.myCert = cert
             self.priK = priK
             self.peerCert = peerC
-            print "peerCert = " + str(peerC)
 
-        def connect(self, sock):
+        def connect(self, sock, dbg=None):
             # Connect Helpers
+            self.dbg = dbg
             def sendClientHello():
-                print "sendClientHello"
-                self.sock.sendall(json.dumps("ClientHello"))
+                if(self.dbg): print "sendClientHello"
+                self.sock.sendall("sendClientHello")
             def recvServerHello():
-                print "recvServerHello"
+                if(self.dbg): print "recvServerHello"
                 return
             def recvCertificate():
-                print "recvCertificate"
+                if(self.dbg): print "recvCertificate"
                 cert = Cert0()
                 cert.loads(self.sock.recv(32))
                 if(not cert.verify(self.peerCert.pubKey())):
-                    print "Alert Bad_Certificate"
+                    if(self.dbg): print "Alert Bad_Certificate"
             def recvServerKeyExchange():
-                print "recvServerKeyExchenge"
+                if(self.dbg): print "recvServerKeyExchenge"
                 (dhP, self.svPub) = json.loads(self.sock.recv(32))
                 dhP = (dhP[0], dhP[1])
                 self.dh = Dh(dhP)
-                print "    dh param: "  + str(dhP)
-                print "    server.public: " + str(self.svPub)
+                if(self.dbg): print "    dh param: "  + str(dhP)
+                if(self.dbg): print "    server.public: " + str(self.svPub)
             def sendClientKeyExchange():
-                print "sendClientKeyExchange"
-                pub = self.dh.genKey()
-                print "    client.public: " + str(pub)
+                if(self.dbg): print "sendClientKeyExchange"
+                pub = self.dh.genKey(self.dbg)
+                if(self.dbg): print "    client.public: " + str(pub)
                 self.sock.sendall(json.dumps(int(pub)))
                 return self.dh.agree(int(self.svPub))
 
-            print "=== tls.connect ==="
+            if(self.dbg): print "=== tls.connect ==="
             self.sock = sock
             sendClientHello()
             recvServerHello()
             recvCertificate()
             recvServerKeyExchange()
-            masterSec = sendClientKeyExchange()
-            self.msgKey(masterSec)
+            premasterSec = sendClientKeyExchange()
+            self.msgKey(premasterSec)
             return
 
-        def accept(self, sock):
+        def accept(self, sock, dbg=None):
             # Accept Helpers
+            self.dbg = dbg
             def recvClientHello():
-                print "recvClientHello"
-                self.sock.recv(32)
+                if(self.dbg): print "recvClientHello"
+                self.sock.recv(128)
             def sendServerHello():
-                print "sendServerHello"
+                if(self.dbg): print "sendServerHello"
                 return
             def sendCertificate():
-                print "sendCertificate"
+                if(self.dbg): print "sendCertificate"
                 self.sock.send(self.myCert.dumps())
             def sendServerKeyExchange():
-                print "sendServerKeyExchange"
+                if(self.dbg): print "sendServerKeyExchange"
                 dhP = RsaGenKey(256)[0]
                 self.dh = Dh(dhP)
-                pub = self.dh.genKey()
+                pub = self.dh.genKey(self.dbg)
                 self.sock.sendall(json.dumps((dhP, pub)))
-                print "    dh param: "  + str(dhP)
-                print "    server.public: " + str(pub)
+                if(self.dbg): print "    dh param: "  + str(dhP)
+                if(self.dbg): print "    server.public: " + str(pub)
             def recvClientKeyExchange():
-                print "recvClientKeyExchange"
+                if(self.dbg): print "recvClientKeyExchange"
                 pub = str(self.sock.recv(32))
-                print "    client.public: " + str(pub)
+                if(self.dbg): print "    client.public: " + str(pub)
                 return self.dh.agree(json.loads(pub))
 
             self.sock = sock
-            print "=== tls.accept ==="
+            if(self.dbg): print "=== tls.accept ==="
             recvClientHello()
             sendServerHello()
             sendCertificate()
             sendServerKeyExchange()
-            masterSec = recvClientKeyExchange()
-            self.msgKey(masterSec)
+            premasterSec = recvClientKeyExchange()
+            self.msgKey(premasterSec)
             return
 
-        def msgKey(self, sec):
-            print "    masterSecret:  " + str(sec)
+        def msgKey(self, sec, dbg=None):
+            if(self.dbg): print "    premasterSecret:  " + str(sec)
             self.aes = Aes0(sec & 0xff)
-        def send(self, msg):
+        def send(self, msg, dbg=None):
             self.sock.sendall(self.aes.encrypt(msg))
             return
-        def recv(self, sz):
+        def recv(self, sz, dbg=None):
             msg = self.sock.recv(sz)
             return self.aes.encrypt(msg)
