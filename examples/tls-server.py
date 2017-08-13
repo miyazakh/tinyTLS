@@ -24,7 +24,7 @@ while True:
             data = tls.recv(32)
             if data:
                 print 'received: ' + data
-                tls.send(data)
+                tls.send("I hear you fa shizzle!")
             else:
                 break
     finally:

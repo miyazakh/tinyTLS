@@ -13,7 +13,7 @@ caCert.load(f)
 tls = Tls0(peerC=caCert)
 tls.connect(sock, True)
 
-message = tls.send('Hello TLS world')
+message = tls.send('Hello server')
 data = tls.recv(32)
 print 'received:' + data
 sock.close()

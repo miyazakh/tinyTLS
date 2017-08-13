@@ -13,7 +13,7 @@ while True:
             data = connection.recv(32)
             if data:
                 print 'received: ' + data
-                connection.sendall(data)
+                connection.sendall("I hear you fa shizzle!")
             else:
                 break
     finally:

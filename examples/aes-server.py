@@ -19,7 +19,7 @@ while True:
                 print 'Received: ' + data
                 dec = aes.encrypt(data)
                 print 'Decrypted:' + dec
-                connection.sendall(aes.encrypt(dec))
+                connection.sendall(aes.encrypt("I hear you fa shizzle!"))
             else:
                 break
     finally:

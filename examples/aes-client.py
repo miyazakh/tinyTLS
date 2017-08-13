@@ -10,7 +10,7 @@ sock.connect(server_address)
 aes = Aes0(12345)
 
 try:
-    message = aes.encrypt('Hello crypt world')
+    message = aes.encrypt('Hello server')
     print 'Encrypted:' + message
     sock.sendall(message)
     data = aes.encrypt(sock.recv(len(message)))

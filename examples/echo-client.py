@@ -6,7 +6,7 @@ server_address = ('localhost', 11111)
 sock.connect(server_address)
 
 try:
-    message = 'This is the message'
+    message = 'Hello server'
     sock.sendall(message)
     data = sock.recv(len(message))
     print 'received:' + data
