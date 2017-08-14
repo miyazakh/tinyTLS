@@ -8,20 +8,19 @@ server_address = ('localhost', 11111)
 sock.bind(server_address)
 sock.listen(1)
 
-aes = Aes0(12345)
+crypt = Crypt0(12345)
 
 while True:
     connection, client_address = sock.accept()
     try:
         while True:
-            data = connection.recv(32)
-            if data:
-                print 'Received: ' + data
-                dec = aes.encrypt(data)
-                print 'Decrypted:' + dec
-                connection.sendall(aes.encrypt("I hear you fa shizzle!"))
+            cipher = connection.recv(32)
+            if cipher:
+                print 'Received: ' + cipher
+                plain = crypt.encrypt(cipher)
+                print 'Decrypted:' + plain
+                connection.sendall(crypt.encrypt("I hear you fa shizzle!"))
             else:
                 break
     finally:
-        # Clean up the connection
         connection.close()

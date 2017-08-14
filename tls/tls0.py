@@ -71,10 +71,9 @@ class Tls0:
 
         def msgKey(self, sec, dbg=None):
             if(self.dbg): print "    premasterSecret:  " + str(sec)
-            self.aes = Aes0(sec & 0xff)
+            self.crypt = Crypt0(sec & 0xff)
         def send(self, msg, dbg=None):
-            self.sock.sendall(self.aes.encrypt(msg))
+            self.sock.sendall(self.crypt.encrypt(msg))
             return
         def recv(self, sz, dbg=None):
-            msg = self.sock.recv(sz)
-            return self.aes.encrypt(msg)
+            return self.crypt.encrypt(self.sock.recv(sz))

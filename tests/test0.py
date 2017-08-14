@@ -8,22 +8,22 @@ sys.path.append('./crypt')
 from crypt0 import *
 
 
-alice = Aes0(123)
-bob   = Aes0(123)
+alice = Crypt0(123)
+bob   = Crypt0(123)
 print str(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 print bob.decrypt(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
 nonce = random.randint(1, 15)
 print "nonce = " + str(nonce)
-alice = Aes0_ctr(123, nonce)
-bob   = Aes0_ctr(123, nonce)
+alice = Crypt0_ctr(123, nonce)
+bob   = Crypt0_ctr(123, nonce)
 print str(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 print bob.decrypt(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
 nonce = random.randint(1, 15)
 print "nonce = " + str(nonce)
-alice = Aes0_gcm(123, nonce, 21)
-bob   = Aes0_gcm(123, nonce, 21)
+alice = Crypt0_gcm(123, nonce, 21)
+bob   = Crypt0_gcm(123, nonce, 21)
 ret = alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 print str(ret)
 print str(bob.decrypt(ret[0], ret[1]))
@@ -81,8 +81,8 @@ dhParam = RsaGenKey(256)[0]
 dhParam = (1411, 57181)
 alice = Dh(dhParam)
 bob   = Dh(dhParam)
-aPub = alice.genKey()
-bPub = bob.genKey()
+aPub = alice.genKey(True)
+bPub = bob.genKey(True)
 print str(alice.agree(bPub)) + " == " + str(bob.agree(aPub))
 
 

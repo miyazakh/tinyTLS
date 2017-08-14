@@ -4,7 +4,7 @@
 import random
 import json
 
-class Aes0:
+class Crypt0:
     def __init__(self, key):
         self.key = int(key & 0xff)
     def encrypt(self, text):
@@ -13,31 +13,23 @@ class Aes0:
             cipher +=  chr((ord(ch) ^ self.key))
         return cipher
     def decrypt(self, cipher):
-        text = ''
-        for ch in cipher:
-            text +=  chr((ord(ch) ^ self.key))
-        return text
+        return self.encrypt(cipher)
 
-class Aes0_ctr:
-        def __init__(self, key, nonce):
-            self.key =   key & 0xff
-            self.nonce = nonce & 0xff
-        def encrypt(self, text):
-            cipher = ''
-            ctr = (self.nonce  & 0xf) << 0x4
-            for ch in text:
-                cipher +=  chr((ord(ch) ^ self.key ^ ctr) & 0xff)
-                ctr += 1
-            return cipher
-        def decrypt(self, cipher):
-            text = ''
-            ctr = (self.nonce  & 0xf) << 0x4
-            for ch in cipher:
-                text +=  chr((ord(ch) ^ self.key ^ ctr) & 0xff)
-                ctr += 1
-            return text
+class Crypt0_ctr:
+    def __init__(self, key, nonce):
+        self.key =   key & 0xff
+        self.nonce = nonce & 0xff
+    def encrypt(self, text):
+        cipher = ''
+        ctr = (self.nonce  & 0xf) << 0x4
+        for ch in text:
+            cipher +=  chr((ord(ch) ^ self.key ^ ctr) & 0xff)
+            ctr += 1
+        return cipher
+    def decrypt(self, cipher):
+        return self.encrypt(cipher)
 
-class Aes0_gcm:
+class Crypt0_gcm:
         def __init__(self, key, nonce, authIn):
             self.key = int(key & 0xff)
             self.nonce = nonce
@@ -182,10 +174,9 @@ class Cert0:
 class Dh:
     def __init__(self, param):
         self.param = param
-        self.pri = 0
     def genKey(self, dbg=None):
         self.pri = random.randint(0, 256)
         if(dbg): print "    dh.PRIVATE:" + str(self.pri)
-        return pow(self.param[1], self.pri, self.param[0])
+        return self.param[1] ** self.pri % self.param[0]
     def agree(self, pub):
-        return pow(pub, self.pri, self.param[0])
+        return pub ** self.pri % self.param[0]
