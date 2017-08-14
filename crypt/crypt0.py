@@ -17,6 +17,7 @@ class Aes0:
         for ch in cipher:
             text +=  chr((ord(ch) ^ self.key))
         return text
+
 class Aes0_ctr:
         def __init__(self, key, nonce):
             self.key =   key & 0xff
@@ -84,22 +85,28 @@ class Sha0:
 class RsaPublic:
     def __init__(self, pub):
         self.pub = pub
-    def encrypt(self, msg):
-        return pow(msg, self.pub[0], self.pub[1])
-    def verify(self, sig):
-        return self.encrypt(sig)
+    def encrypt(self, num):
+        return pow(num, self.pub[0], self.pub[1])
+    def verify(self, msg, sig):
+        md = Sha0()
+        md.update(msg)
+        return md.digest() == self.encrypt(sig)
 
 class RsaPrivate:
     def __init__(self, pri):
         self.pri = pri
-    def encrypt(self, msg):
-        return pow(msg, self.pri[0], self.pri[1])
-    def decrypt(self, msg):
-        return pow(msg, self.pri[0], self.pri[1])
+    def encrypt(self, num):
+        return pow(num, self.pri[0], self.pri[1])
+    def decrypt(self, num):
+        return pow(num, self.pri[0], self.pri[1])
     def sign(self, msg):
-        return self.decrypt(msg)
-    def verify(self, sig):
-        return self.encrypt(sig)
+        md = Sha0()
+        md.update(msg)
+        return self.decrypt(md.digest())
+    def verify(self, msg, sig):
+        md = Sha0()
+        md.update(msg)
+        return md.digest() == self.encrypt(sig)
 
 
 def RsaGenKey(min):
@@ -153,15 +160,9 @@ class Cert0:
         self.pub = pub
         self.sig = None
     def sign(self, pri):
-        sha = Sha0()
-        sha.update(str(self.pub[0])+str(self.pub[1]))
-        digest = sha.digest()
-        self.sig = RsaPrivate(pri).sign(digest)
+        self.sig = RsaPrivate(pri).sign(json.dumps(self.pub))
     def verify(self, pub):
-        sha = Sha0()
-        sha.update(str(self.pub[0])+str(self.pub[1]))
-        digest = sha.digest()
-        return digest == RsaPublic(pub).verify(self.sig)
+        return RsaPublic(pub).verify(json.dumps(self.pub), self.sig)
     def pubKey(self):
         return self.pub
     def dump(self,f):
@@ -180,9 +181,9 @@ class Dh:
     def __init__(self, param):
         self.param = param
         self.pri = 0
-    def genKey(self):
+    def genKey(self, dbg=None):
         self.pri = random.randint(0, 256)
-        print "    dh.PRIVATE:" + str(self.pri)
+        if(dbg): print "    dh.PRIVATE:" + str(self.pri)
         return pow(self.param[1], self.pri, self.param[0])
     def agree(self, pub):
         return pow(pub, self.pri, self.param[0])

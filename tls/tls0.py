@@ -25,8 +25,11 @@ class Tls0:
                     if(self.dbg): print "Alert Bad_Certificate"
             def recvServerKeyExchange():
                 if(self.dbg): print "recvServerKeyExchenge"
-                (dhP, self.svPub) = json.loads(self.sock.recv(32))
+                (dhP, self.svPub, sig) = json.loads(self.sock.recv(32))
                 dhP = (dhP[0], dhP[1])
+                pub = RsaPublic(self.peerCert.pubKey())
+                if not pub.verify(json.dumps(dhP, self.svPub), sig):
+                    print "Invalid Server Key"
                 self.dh = Dh(dhP)
                 if(self.dbg): print "    dh param: "  + str(dhP)
                 if(self.dbg): print "    server.public: " + str(self.svPub)
@@ -64,7 +67,8 @@ class Tls0:
                 dhP = RsaGenKey(256)[0]
                 self.dh = Dh(dhP)
                 pub = self.dh.genKey(self.dbg)
-                self.sock.sendall(json.dumps((dhP, pub)))
+                sig = self.priK.sign(json.dumps((dhP, pub)))
+                self.sock.sendall(json.dumps((dhP, pub, sig)))
                 if(self.dbg): print "    dh param: "  + str(dhP)
                 if(self.dbg): print "    server.public: " + str(pub)
             def recvClientKeyExchange():

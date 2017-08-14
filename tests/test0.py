@@ -37,13 +37,10 @@ pKey = RsaGenKey(256)
 pub = RsaPublic(pKey[0])
 pri = RsaPrivate(pKey[1])
 
-msg = 1234
+msg = "1234"
 sig = pri.sign(msg)
 print str(sig)
-if pub.verify(sig) == msg:
-    print "Verified"
-else:
-    print "Failed"
+print "Verify = " + str(pub.verify(msg, sig))
 
 pKey = RsaGenKey(256)
 caPub = pKey[0]
