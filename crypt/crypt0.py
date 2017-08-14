@@ -73,14 +73,16 @@ class Aes0_gcm:
 class Sha0:
     def __init__(self):
         self.md = 0x5a
+        self.len = 0
     def update(self, msg):
 	    for ch in msg:
 		    self.md = self.md ^ ord(ch)
 		    self.md <<= 1
             self.md |= (self.md >> 8) & 0x1
             self.md &= 0xff
+            self.len += len(msg)
     def digest(self):
-        return self.md
+        return (self.md ^ self.len) & 0xff
 
 class RsaPublic:
     def __init__(self, pub):

@@ -58,7 +58,7 @@ class Tls0:
                 if(self.dbg): print "recvClientKeyExchange"
                 pub = json.loads(self.sock.recv(32))
                 if(self.dbg): print "    client.public: " + str(pub)
-                return self.dh.agree(json.loads(pub))
+                return self.dh.agree(pub)
 
             self.sock = sock
             if(self.dbg): print "=== tls.accept ==="

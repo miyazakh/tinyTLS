@@ -10,7 +10,7 @@ from crypt0 import *
 
 alice = Aes0(123)
 bob   = Aes0(123)
-print alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+print str(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 print bob.decrypt(alice.encrypt("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
 
 nonce = random.randint(1, 15)
