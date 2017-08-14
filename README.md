@@ -19,10 +19,15 @@
    tls-{client, server}.py  
     echo client and server with TLS0 protocol
 
+   tls-{client, server}-cert.py  
+     echo client and server with TLS0 protocol with Certificate
+
 ./test/test0.py  
    testing crypt layer classes
 ./tls/tls0.py  
    TLS layer class
+./tls/tls0_cert.py  
+      TLS layer with Certificate class
 
 
 ### Quick start  
@@ -40,5 +45,7 @@
     $ python ./examples/tls-server.py &  
     $ python ./examples/tls-client.py
 
+    $ python ./examples/tls-server-cert.py &  
+    $ python ./examples/tls-client-cert.py
 
 Enjoy!!
