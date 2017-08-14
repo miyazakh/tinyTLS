@@ -13,8 +13,8 @@
    echo-{client, server}.py  
     basic echo client and server
 
-   aes-{client, server}.py  
-     echo client and server, message encrypted by Aes0
+   crypt-{client, server}.py  
+     echo client and server, message encrypted by Crypt0
 
    tls-{client, server}.py  
     echo client and server with TLS0 protocol
@@ -39,8 +39,8 @@
     $ python ./examples/echo-server.py &  
     $ python ./examples/echo-client.py
 
-    $ python ./examples/aes-server.py &  
-    $ python ./examples/aes-client.py
+    $ python ./examples/crypt-server.py &  
+    $ python ./examples/crypt-client.py
 
     $ python ./examples/tls-server.py &  
     $ python ./examples/tls-client.py
