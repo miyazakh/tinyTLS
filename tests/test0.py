@@ -33,18 +33,16 @@ sha.update("ABCDEFG")
 print sha.digest()
 
 
-pKey = RsaGenKey(256)
-pub = RsaPublic(pKey[0])
-pri = RsaPrivate(pKey[1])
+(pubK, priK) = RsaGenKey(256)
+pub = RsaPublic(pubK)
+pri = RsaPrivate(priK)
 
 msg = "1234"
 sig = pri.sign(msg)
 print str(sig)
 print "Verify = " + str(pub.verify(msg, sig))
 
-pKey = RsaGenKey(256)
-caPub = pKey[0]
-caPri = pKey[1]
+(caPub, caPri) = RsaGenKey(256)
 caCert = Cert0(caPub)
 caCert.sign(caPri)
 caCert.verify(caPub)
