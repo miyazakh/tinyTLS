@@ -69,12 +69,13 @@ class Tls0_cert:
                 pub = self.dh.genKey(self.dbg)
                 sig = self.priK.sign(json.dumps((dhP, pub)))
                 self.sock.sendall(json.dumps((dhP, pub, sig)))
-                if(self.dbg): print "    dh param: "  + str(dhP)
-                if(self.dbg): print "    server.public: " + str(pub)
+                if(self.dbg): print "    dh param:  "  + str(dhP)
+                if(self.dbg): print "    server.pub:" + str(pub)
+                if(self.dbg): print "    svKey sig: " + str(sig)
             def recvClientKeyExchange():
                 if(self.dbg): print "recvClientKeyExchange"
                 pub = json.loads(self.sock.recv(32))
-                if(self.dbg): print "    client.public: " + str(pub)
+                if(self.dbg): print "    client.pub:" + str(pub)
                 return self.dh.agree(pub)
 
             self.sock = sock
@@ -88,11 +89,10 @@ class Tls0_cert:
             return
 
         def msgKey(self, sec, dbg=None):
-            if(self.dbg): print "    premasterSecret:  " + str(sec)
+            if(self.dbg): print "    premasterSec:  " + str(sec)
             self.crypt = Crypt0(sec & 0xff)
         def send(self, msg, dbg=None):
             self.sock.sendall(self.crypt.encrypt(msg))
             return
         def recv(self, sz, dbg=None):
-            msg = self.sock.recv(sz)
-            return self.crypt.encrypt(msg)
+            return self.crypt.encrypt(self.sock.recv(sz))

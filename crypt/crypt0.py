@@ -65,20 +65,17 @@ class Crypt0_gcm:
 class Sha0:
     def __init__(self):
         self.md = 0x5a
-        self.len = 0
+        self.sz = 0
     def update(self, msg):
 	    for ch in msg:
-		    self.md = self.md ^ ord(ch)
-		    self.md <<= 1
-            self.md |= (self.md >> 8) & 0x1
-            self.md &= 0xff
-            self.len += len(msg)
+		    self.md += ord(ch)
+	    self.sz += len(msg)
     def digest(self):
-        return (self.md ^ self.len) & 0xff
+        return (self.md ^ self.sz) & 0xff
 
 class RsaPublic:
     def __init__(self, pub):
-        (self.n, self.e) = pub
+        (self.e, self.n) = pub
     def encrypt(self, num):
         return num ** self.e % self.n
     def verify(self, msg, sig):
@@ -88,7 +85,7 @@ class RsaPublic:
 
 class RsaPrivate:
     def __init__(self, pri):
-        (self.n, self.d) = pri
+        (self.d, self.n) = pri
     def decrypt(self, num):
         return num ** self.d % self.n
     def sign(self, msg):
