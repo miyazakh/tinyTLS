@@ -29,8 +29,9 @@ print str(ret)
 print str(bob.decrypt(ret[0], ret[1]))
 
 sha = Sha0()
-sha.update("ABCDEFG")
-print sha.digest()
+msg = 'A Big Bad Wolf wants to eat the girl and the food in the basket.'
+sha.update(msg)
+print str(sha.digest()) + ": " + msg
 
 
 (pubK, priK) = RsaGenKey(256)
@@ -85,10 +86,12 @@ print str(alice.agree(bPub)) + " == " + str(bob.agree(aPub))
 
 
 #RSA key generation
-for j in range(0,100):
-    pub, pri = RsaGenKey(256)
-    print str(pub) + str(pri)
+for j in range(0,10):
+    pubK, priK = RsaGenKey(256)
+    print str((pubK, priK))
+    pub = RsaPublic(pubK)
+    pri = RsaPrivate(priK)
     for i in range(0, 256):
-        if(i != pow(pow(i, pub[0], pub[1]), pri[0], pri[1])):
+        if(i != pri.decrypt(pub.encrypt(i))):
             print "ERR" + str(i)
             break
