@@ -20,12 +20,11 @@ while True:
     connection, client_address = sock.accept()
     tls.accept(connection, True)
     try:
-        while True:
-            data = tls.recv(32)
-            if data:
-                print 'received: ' + data
-                tls.send("I hear you fa shizzle!")
-            else:
-                break
+        data = tls.recv(32)
+        if data:
+            print 'received: ' + data
+            tls.send("I hear you fa shizzle!")
+        else:
+            break
     finally:
         connection.close()

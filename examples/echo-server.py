@@ -9,12 +9,11 @@ sock.listen(1)
 while True:
     connection, client_address = sock.accept()
     try:
-        while True:
-            data = connection.recv(32)
-            if data:
-                print 'received: ' + data
-                connection.sendall("I hear you fa shizzle!")
-            else:
-                break
+        data = connection.recv(32)
+        if data:
+            print 'received: ' + data
+            connection.sendall("I hear you fa shizzle!")
+        else:
+            break
     finally:
         connection.close()

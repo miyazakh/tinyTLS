@@ -9,27 +9,29 @@ class Tls0_cert:
             self.myCert = cert
             self.priK = priK
             self.peerCert = peerC
-
+            self.rec = TlsRecord(3,3)
     def connect(self, sock, dbg=None):
             # Connect Helpers
-        try:
             self.dbg = dbg
-            self.rec = TlsRecord(sock, 3,3)
+            self.rec.setSock(sock)
             def sendClientHello():
                 if(self.dbg): print "sendClientHello"
-                self.rec.send("ClientHello")
+                self.rec.send('["ClientHello"]')
             def recvServerHello():
                 if(self.dbg): print "recvServerHello"
                 return
             def recvCertificate():
-                if(self.dbg): print "recvCertificate"
-                cert = Cert0()
-                cert.loads(self.rec.recv(64))
-                if(not cert.verify(self.peerCert.pubKey())):
-                    raise Bad_Certificate
+                try:
+                    if(self.dbg): print "recvCertificate"
+                    cert = Cert0()
+                    cert.loads(self.rec.recv())
+                    if(not cert.verify(self.peerCert.pubKey())):
+                        raise Bad_Certificate
+                except Bad_Certificate:
+                    print "ERROR: Bad_Certificate"
             def recvServerKeyExchange():
                 if(self.dbg): print "recvServerKeyExchenge"
-                (dhP, self.svPub, sig) = json.loads(self.rec.recv(64))
+                (dhP, self.svPub, sig) = json.loads(self.rec.recv())
                 dhP = (dhP[0], dhP[1])
                 pub = RsaPublic(self.peerCert.pubKey())
                 if not pub.verify(json.dumps(dhP, self.svPub), sig):
@@ -41,7 +43,7 @@ class Tls0_cert:
                 if(self.dbg): print "sendClientKeyExchange"
                 pub = self.dh.genKey(self.dbg)
                 if(self.dbg): print "    client.public: " + str(pub)
-                self.rec.send(json.dumps(int(pub)))
+                self.rec.send(json.dumps(pub))
                 return self.dh.agree(int(self.svPub))
 
             if(self.dbg): print "=== tls.connect ==="
@@ -53,18 +55,14 @@ class Tls0_cert:
             self.msgKey(premasterSec)
             return
 
-        except Bad_Certificate:
-            print "ERROR: Bad_Certificate"
-            return
-
     def accept(self, sock, dbg=None):
             # Accept Helpers
 
             self.dbg = dbg
-            self.rec = TlsRecord(sock, 3,3)
+            self.rec.setSock(sock)
             def recvClientHello():
                 if(self.dbg): print "recvClientHello"
-                self.rec.recv(64)
+                self.rec.recv()
             def sendServerHello():
                 if(self.dbg): print "sendServerHello"
                 return
@@ -83,7 +81,7 @@ class Tls0_cert:
                 if(self.dbg): print "    svKey sig: " + str(sig)
             def recvClientKeyExchange():
                 if(self.dbg): print "recvClientKeyExchange"
-                pub = json.loads(self.rec.recv(64))
+                pub = json.loads(self.rec.recv())
                 if(self.dbg): print "    client.pub:" + str(pub)
                 return self.dh.agree(pub)
 
@@ -102,5 +100,5 @@ class Tls0_cert:
     def send(self, msg, dbg=None):
             self.rec.sendMsg(self.crypt.encrypt(msg))
             return
-    def recv(self, sz, dbg=None):
-            return self.crypt.encrypt(self.rec.recvMsg(sz))
+    def recv(self, dbg=None):
+            return self.crypt.encrypt(self.rec.recvMsg())

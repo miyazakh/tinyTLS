@@ -8,19 +8,20 @@ from tls_rec import *
 class Tls0:
         def __init__(self):
             self.dbg = None
+            self.rec = TlsRecord(3, 3)
         def connect(self, sock, dbg=None):
             # Connect Helpers
             self.dbg = dbg
-            self.rec = TlsRecord(sock, 3,3)
+            self.rec.setSock(sock)
             def sendClientHello():
                 if(self.dbg): print "sendClientHello"
-                self.rec.send("ClientHello")
+                self.rec.send('["ClientHello"]')
             def recvServerHello():
                 if(self.dbg): print "recvServerHello"
                 return
             def recvServerKeyExchange():
                 if(self.dbg): print "recvServerKeyExchenge"
-                (dhP, self.svPub) = json.loads(self.rec.recv(128))
+                (dhP, self.svPub) = json.loads(self.rec.recv())
                 dhP = (dhP[0], dhP[1])
                 self.dh = Dh(dhP)
                 if(self.dbg): print "    dh param: "  + str(dhP)
@@ -44,10 +45,10 @@ class Tls0:
         def accept(self, sock, dbg=None):
             # Accept Helpers
             self.dbg = dbg
-            self.rec = TlsRecord(sock, 3, 3)
+            self.rec.setSock(sock)
             def recvClientHello():
                 if(self.dbg): print "recvClientHello"
-                self.rec.recv(64)
+                self.rec.recv()
             def sendServerHello():
                 if(self.dbg): print "sendServerHello"
                 return
@@ -61,11 +62,10 @@ class Tls0:
                 if(self.dbg): print "    server.public: " + str(pub)
             def recvClientKeyExchange():
                 if(self.dbg): print "recvClientKeyExchange"
-                pub = json.loads(self.rec.recv(64))
+                pub = json.loads(self.rec.recv())
                 if(self.dbg): print "    client.public: " + str(pub)
                 return self.dh.agree(pub)
 
-            self.sock = sock
             if(self.dbg): print "=== tls.accept ==="
             recvClientHello()
             sendServerHello()
@@ -80,5 +80,5 @@ class Tls0:
         def send(self, msg, dbg=None):
             self.rec.sendMsg(self.crypt.encrypt(msg))
             return
-        def recv(self, sz, dbg=None):
-            return self.crypt.encrypt(self.rec.recvMsg(sz))
+        def recv(self, dbg=None):
+            return self.crypt.encrypt(self.rec.recvMsg())

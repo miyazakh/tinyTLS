@@ -8,6 +8,15 @@
 ./crypt/crypt0.py  
     Crypt layer class  
 
+./tls  
+
+    ./tls/tls0.py  
+       TLS layer class  
+    ./tls/tls0_cert.py  
+        TLS layer with Certificate class
+    ./tls/tls_rec.py  
+        TLS record layer class  
+
 ./examples  
 
    echo-{client, server}.py  
@@ -22,12 +31,16 @@
    tls-{client, server}-cert.py  
      echo client and server with TLS0 protocol with Certificate
 
-./test/test0.py  
-   testing crypt layer classes
-./tls/tls0.py  
-   TLS layer class
-./tls/tls0_cert.py  
-      TLS layer with Certificate class
+./test   
+
+   testing crypt layer classes  
+
+   test0.py  
+   test-crypt0.py  
+   test-dh.py  
+   test-rsa.py  
+   test-sign0.py  
+   test-sign1.py  
 
 
 ### Quick start  
