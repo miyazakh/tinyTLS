@@ -5,18 +5,19 @@ sys.path.append('./tls')
 from tls_rec import *
 
 class Tls0_cert:
-        def __init__(self, cert=None, priK=None, peerC=None):
+    def __init__(self, cert=None, priK=None, peerC=None):
             self.myCert = cert
             self.priK = priK
             self.peerCert = peerC
 
-        def connect(self, sock, dbg=None):
+    def connect(self, sock, dbg=None):
             # Connect Helpers
+        try:
             self.dbg = dbg
             self.rec = TlsRecord(sock, 3,3)
             def sendClientHello():
                 if(self.dbg): print "sendClientHello"
-                self.rec.send("sendClientHello")
+                self.rec.send("ClientHello")
             def recvServerHello():
                 if(self.dbg): print "recvServerHello"
                 return
@@ -25,7 +26,7 @@ class Tls0_cert:
                 cert = Cert0()
                 cert.loads(self.rec.recv(64))
                 if(not cert.verify(self.peerCert.pubKey())):
-                    if(self.dbg): print "Alert Bad_Certificate"
+                    raise Bad_Certificate
             def recvServerKeyExchange():
                 if(self.dbg): print "recvServerKeyExchenge"
                 (dhP, self.svPub, sig) = json.loads(self.rec.recv(64))
@@ -52,8 +53,13 @@ class Tls0_cert:
             self.msgKey(premasterSec)
             return
 
-        def accept(self, sock, dbg=None):
+        except Bad_Certificate:
+            print "ERROR: Bad_Certificate"
+            return
+
+    def accept(self, sock, dbg=None):
             # Accept Helpers
+
             self.dbg = dbg
             self.rec = TlsRecord(sock, 3,3)
             def recvClientHello():
@@ -77,7 +83,7 @@ class Tls0_cert:
                 if(self.dbg): print "    svKey sig: " + str(sig)
             def recvClientKeyExchange():
                 if(self.dbg): print "recvClientKeyExchange"
-                pub = json.loads(self.rec.recv(32))
+                pub = json.loads(self.rec.recv(64))
                 if(self.dbg): print "    client.pub:" + str(pub)
                 return self.dh.agree(pub)
 
@@ -90,11 +96,11 @@ class Tls0_cert:
             self.msgKey(premasterSec)
             return
 
-        def msgKey(self, sec, dbg=None):
+    def msgKey(self, sec, dbg=None):
             if(self.dbg): print "    premasterSec:  " + str(sec)
             self.crypt = Crypt0(sec & 0xff)
-        def send(self, msg, dbg=None):
+    def send(self, msg, dbg=None):
             self.rec.sendMsg(self.crypt.encrypt(msg))
             return
-        def recv(self, sz, dbg=None):
+    def recv(self, sz, dbg=None):
             return self.crypt.encrypt(self.rec.recvMsg(sz))

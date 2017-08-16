@@ -14,13 +14,13 @@ class Tls0:
             self.rec = TlsRecord(sock, 3,3)
             def sendClientHello():
                 if(self.dbg): print "sendClientHello"
-                self.rec.send("sendClientHello")
+                self.rec.send("ClientHello")
             def recvServerHello():
                 if(self.dbg): print "recvServerHello"
                 return
             def recvServerKeyExchange():
                 if(self.dbg): print "recvServerKeyExchenge"
-                (dhP, self.svPub) = json.loads(self.rec.recv(64))
+                (dhP, self.svPub) = json.loads(self.rec.recv(128))
                 dhP = (dhP[0], dhP[1])
                 self.dh = Dh(dhP)
                 if(self.dbg): print "    dh param: "  + str(dhP)
@@ -47,7 +47,7 @@ class Tls0:
             self.rec = TlsRecord(sock, 3, 3)
             def recvClientHello():
                 if(self.dbg): print "recvClientHello"
-                self.rec.recv(128)
+                self.rec.recv(64)
             def sendServerHello():
                 if(self.dbg): print "sendServerHello"
                 return
