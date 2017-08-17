@@ -6,11 +6,28 @@ from tls_rec import *
 
 class Tls0_cert:
     def __init__(self, cert=None, priK=None, peerC=None):
+        """
+            TLS class for TLS handshake and send/receive messages.
+
+            Parameters
+            ----------
+            cert : Server certificate.
+            priK : Server private key.
+                   cert and prik are mandate when the class is used for the server side.
+            peerC: Certificate to velify peer cert
+        """
             self.myCert = cert
             self.priK = priK
             self.peerCert = peerC
             self.rec = TlsRecord(3,3)
     def connect(self, sock, dbg=None):
+        """
+            Connect to the server.
+
+            Parameters
+            ----------
+                sock : TCP connected socket with the server
+        """
             # Connect Helpers
             self.dbg = dbg
             self.rec.setSock(sock)
@@ -56,8 +73,13 @@ class Tls0_cert:
             return
 
     def accept(self, sock, dbg=None):
-            # Accept Helpers
+        """
+            Accept connection from a client
 
+            Parameters
+            ----------
+                sock : TCP connected socket with client
+        """
             self.dbg = dbg
             self.rec.setSock(sock)
             def recvClientHello():
@@ -95,10 +117,31 @@ class Tls0_cert:
             return
 
     def msgKey(self, sec, dbg=None):
+        """
+            set premaster secret
+
+            Parameters
+            ----------
+                sec : premaster secret
+        """
             if(self.dbg): print "    premasterSec:  " + str(sec)
             self.crypt = Crypt0(sec & 0xff)
     def send(self, msg, dbg=None):
+        """
+            send application message
+
+            Parameters
+            ----------
+                msg : application layer message
+        """
             self.rec.sendMsg(self.crypt.encrypt(msg))
             return
     def recv(self, dbg=None):
+        """
+            receive application message
+
+            Returns
+            ----------
+                str : Decrypted received message
+        """
             return self.crypt.encrypt(self.rec.recvMsg())

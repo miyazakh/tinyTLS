@@ -7,9 +7,20 @@ from tls_rec import *
 
 class Tls0:
         def __init__(self):
+            """
+                TLS class for TLS handshake and send/receive messages.
+                (This is simplified version of Tls0_cert without Certificate validation)
+            """
             self.dbg = None
             self.rec = TlsRecord(3, 3)
         def connect(self, sock, dbg=None):
+            """
+                Connect to the server.
+
+                Parameters
+                ----------
+                    sock : TCP connected socket with the server
+            """
             # Connect Helpers
             self.dbg = dbg
             self.rec.setSock(sock)
@@ -43,6 +54,13 @@ class Tls0:
             return
 
         def accept(self, sock, dbg=None):
+            """
+                Accept connection from a client
+
+                Parameters
+                ----------
+                    sock : TCP connected socket with client
+            """
             # Accept Helpers
             self.dbg = dbg
             self.rec.setSock(sock)
@@ -75,10 +93,31 @@ class Tls0:
             return
 
         def msgKey(self, sec, dbg=None):
+            """
+                set premaster secret
+
+                Parameters
+                ----------
+                    sec : premaster secret
+            """
             if(self.dbg): print "    premasterSecret:  " + str(sec)
             self.crypt = Crypt0(sec & 0xff)
         def send(self, msg, dbg=None):
+            """
+                send application message
+
+                Parameters
+                ----------
+                    msg : application layer message
+            """
             self.rec.sendMsg(self.crypt.encrypt(msg))
             return
         def recv(self, dbg=None):
+            """
+                receive application message
+
+                Returns
+                ----------
+                    str : Decrypted received message
+            """
             return self.crypt.encrypt(self.rec.recvMsg())
