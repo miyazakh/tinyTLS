@@ -77,7 +77,8 @@ class RsaPublic:
     def __init__(self, pub):
         (self.e, self.n) = pub
     def encrypt(self, num):
-        return num ** self.e % self.n
+        return pow(num, self.e, self.n)
+        #return num ** self.e % self.n
     def verify(self, msg, sig):
         md = Sha0()
         md.update(msg)
@@ -87,7 +88,8 @@ class RsaPrivate:
     def __init__(self, pri):
         (self.d, self.n) = pri
     def decrypt(self, num):
-        return num ** self.d % self.n
+        return pow(num, self.d, self.n)
+        #return num ** self.d % self.n
     def sign(self, msg):
         md = Sha0()
         md.update(msg)
@@ -167,6 +169,8 @@ class Dh:
     def genKey(self, dbg=None):
         self.pri = random.randint(0, 256)
         if(dbg): print "    dh.PRIVATE:" + str(self.pri)
-        return self.g ** self.pri % self.p
+        return pow(self.g, self.pri, self.p)
+        #return self.g ** self.pri % self.p
     def agree(self, pub):
-        return pub ** self.pri % self.p
+        return pow(pub, self.pri, self.p)
+        #return pub ** self.pri % self.p
